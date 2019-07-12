@@ -9,7 +9,7 @@
 #Include Once "andev/ini.bi"
 
 '##############################################################################################################
-Const APP_VERSION As String = "17.05.02" ' 16.08.02
+Const APP_VERSION As String = "19.07.12" ' 17.05.02 16.08.02
 
 Dim G_Client As UInteger
 
@@ -18,7 +18,7 @@ Dim Shared SONOS_PORT As Integer
 Dim Shared SONOS_VOL As String
 Dim Shared THREADS_OPEN As Integer
 
-Const DEBUG As Byte = 0
+Const DEBUG As Byte = 1
 
 '##############################################################################################################
 Sub TSNE_Connected(ByVal V_TSNEID As UInteger)		'Empfänger für das Connect Signal (Verbindung besteht)
@@ -71,7 +71,7 @@ Sub SONOS_Scan(ByVal V_TSNEID As UInteger)
 	Dim CRLF As String = Chr(13, 10)
 	Dim D As String
 	D += "GET /status/zp HTTP/1.1" & CRLF
-	D += "HOST: " & SONOS_IP & ":" & SONOS_PORT & CRLF
+	D += "HOST: " & TSNE_GetIPA(V_TSNEID) & ":" & SONOS_PORT & CRLF
 	D += "connection: close" & CRLF
 	D += CRLF
 	
@@ -127,7 +127,7 @@ Sub TSNE_Scan_NewData(ByVal V_TSNEID As UInteger, ByRef V_Data As String)
 	
 	If LocalUID <> "" And IPAddress <> "" Then
 		Print "found device " & LocalUID & " -> " & IPAddress
-		ini.setString "Devices", LocalUID, IPAddress, ExePath & "\SonosCotrol.ini"
+		ini.setString "Devices", LocalUID, IPAddress, ExePath & "\SonosControl.ini"
 	EndIf
 End Sub
 
@@ -136,6 +136,8 @@ Sub threadSonosScan(ByVal id As Integer)
 	
 	THREADS_OPEN = THREADS_OPEN + 1
 	connectIP = SONOS_IP & id
+	
+	'If DEBUG = 1 Then Print "scanning " & connectIP & ":" & SONOS_PORT
 	
 	Dim G_Client As UInteger
 	Dim BV As Integer = TSNE_Create_Client(G_Client, connectIP, SONOS_PORT, @TSNE_Disconnected, @SONOS_Scan, @TSNE_Scan_NewData, 1, TSNE_INT_StackSize, 0)
@@ -266,7 +268,7 @@ Dim SonosIP As String = Command(1)
 Dim SonosCmd As String = Command(2)
 
 If UCase(Left(SonosIP, 6)) = "RINCON" Then
-	SonosIP = ini.getString("Devices", SonosIP, "", ExePath & "\SonosCotrol.ini")
+	SonosIP = ini.getString("Devices", SonosIP, "", ExePath & "\SonosControl.ini")
 EndIf
 
 If SonosIP = "" Or SonosCmd = "" Then
