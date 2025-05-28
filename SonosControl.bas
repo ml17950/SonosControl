@@ -6,10 +6,10 @@
 '##############################################################################################################
 '##############################################################################################################
 #Include Once "inc/TSNE_V3.bi"							'Die TCP Netzwerkbibliotek integrieren
-#Include Once "andev/ini.bi"
+#Include Once "../_lib/ini.bi"
 
 '##############################################################################################################
-Const APP_VERSION As String = "19.07.12" ' 17.05.02 16.08.02
+Const APP_VERSION As String = "23.05.28"
 
 Dim G_Client As UInteger
 
@@ -18,7 +18,7 @@ Dim Shared SONOS_PORT As Integer
 Dim Shared SONOS_VOL As String
 Dim Shared THREADS_OPEN As Integer
 
-Const DEBUG As Byte = 1
+Const DEBUG As Byte = 0
 
 '##############################################################################################################
 Sub TSNE_Connected(ByVal V_TSNEID As UInteger)		'Empfänger für das Connect Signal (Verbindung besteht)
@@ -114,7 +114,7 @@ Sub TSNE_Scan_NewData(ByVal V_TSNEID As UInteger, ByRef V_Data As String)
 		pS = pF + Len("<LocalUID>")
 		pE = InStr(pS+1, V_Data, "</LocalUID>")
 		LocalUID = Mid(V_DATA, pS, pE-pS)
-		'Print "LocalUID: [" & LocalUID & "]"
+		If DEBUG = 1 Then Print "LocalUID: [" & LocalUID & "]"
 	EndIf
 	
 	pF = InStr(V_Data, "<IPAddress>")
@@ -122,7 +122,7 @@ Sub TSNE_Scan_NewData(ByVal V_TSNEID As UInteger, ByRef V_Data As String)
 		pS = pF + Len("<IPAddress>")
 		pE = InStr(pS+1, V_Data, "</IPAddress>")
 		IPAddress = Mid(V_DATA, pS, pE-pS)
-		'Print "IPAddress: [" & IPAddress & "]"
+		If DEBUG = 1 Then Print "IPAddress: [" & IPAddress & "]"
 	EndIf
 	
 	If LocalUID <> "" And IPAddress <> "" Then
@@ -137,7 +137,7 @@ Sub threadSonosScan(ByVal id As Integer)
 	THREADS_OPEN = THREADS_OPEN + 1
 	connectIP = SONOS_IP & id
 	
-	'If DEBUG = 1 Then Print "scanning " & connectIP & ":" & SONOS_PORT
+	If DEBUG = 1 Then Print "scanning " & connectIP & ":" & SONOS_PORT
 	
 	Dim G_Client As UInteger
 	Dim BV As Integer = TSNE_Create_Client(G_Client, connectIP, SONOS_PORT, @TSNE_Disconnected, @SONOS_Scan, @TSNE_Scan_NewData, 1, TSNE_INT_StackSize, 0)

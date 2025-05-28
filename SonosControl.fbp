@@ -11,9 +11,9 @@ IncVersion=0
 RunCmd=0
 [Make]
 Current=1
-1=Windows Console,fbc -s console
+1=Windows Console,fbc32 -s console
 Recompile=2
-Module=Module Build,fbc -c
+Module=Module Build,fbc32 -c
 Output=
 Run=192.168.151.1 SCAN
 Delete=
@@ -25,5 +25,5 @@ TabOrder=1
 [BreakPoint]
 1=
 [FileInfo]
-1=0,121,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+1=0,11,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 2=0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
