@@ -8,7 +8,7 @@
 - [x] **Dateizugriffs-Race-Condition in INI-Datei bei `SCAN` beheben (`SonosControl.bas`)**
   - In `TSNE_Scan_NewData` (Zeilen 148-149) schreiben parallele Threads zeitgleich über `ini.setString` (`WritePrivateProfileString`) in `SonosControl.ini`.
   - Fehlende Thread-Synchronisation/Mutex kann zu Dateibeschädigungen oder Datenverlust führen.
-- [ ] **Fehlerhafte Parameter in Batch-Skripten korrigieren (`start-sonos.bat`, `stop-sonos.bat`)**
+- [x] **Fehlerhafte Parameter in Batch-Skripten korrigieren (`start-sonos.bat`, `stop-sonos.bat`)**
   - `start-sonos.bat` nutzt Subnetz `192.168.2.1` und RINCON-IDs (`RINCON_5CAAFD77B6A201400`, `RINCON_5CAAFD77B68C01400`), die nicht in `SonosControl.ini` existieren (`192.168.151.x`).
   - Skripte schlagen im aktuellen Zustand fehl.
 - [ ] **Fehlende Auflösung von Raumnamen (`SonosControl.bas`)**
