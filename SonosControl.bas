@@ -2,14 +2,14 @@
 ' http://technikblog.ch/2015/08/sonos-web-interface-erweiterte-einrichtung-fuer-sonos-lautsprecher/
 
 '##############################################################################################################
-'TEST-CLIENT für TSNE_V3
+'TEST-CLIENT fï¿½r TSNE_V3
 '##############################################################################################################
 '##############################################################################################################
 #Include Once "inc/TSNE_V3.bi"							'Die TCP Netzwerkbibliotek integrieren
-#Include Once "../_lib/ini.bi"
+#Include Once "inc/ini.bi"
 
 '##############################################################################################################
-Const APP_VERSION As String = "23.05.28"
+Const APP_VERSION As String = "26.05.13"
 
 Dim G_Client As UInteger
 
@@ -18,10 +18,10 @@ Dim Shared SONOS_PORT As Integer
 Dim Shared SONOS_VOL As String
 Dim Shared THREADS_OPEN As Integer
 
-Const DEBUG As Byte = 0
+Const DEBUG As Byte = 1
 
 '##############################################################################################################
-Sub TSNE_Connected(ByVal V_TSNEID As UInteger)		'Empfänger für das Connect Signal (Verbindung besteht)
+Sub TSNE_Connected(ByVal V_TSNEID As UInteger)		'Empfï¿½nger fï¿½r das Connect Signal (Verbindung besteht)
 	Print "[CONNECT]"
 	
 	'Daten zum senden vorbereiten (HTTP Protokoll Anfrage)
@@ -44,12 +44,18 @@ Sub TSNE_Connected(ByVal V_TSNEID As UInteger)		'Empfänger für das Connect Signa
 End Sub
 
 '##############################################################################################################
-Sub TSNE_Disconnected(ByVal V_TSNEID As UInteger)	'Empfänger für das Disconnect Signal (Verbindung beendet)
+Sub TSNE_Disconnected(ByVal V_TSNEID As UInteger)	'Empfï¿½nger fï¿½r das Disconnect Signal (Verbindung beendet)
 	'Print "[DISCONNECTED] ";
 End Sub
 
 '##############################################################################################################
-Sub TSNE_NewData (ByVal V_TSNEID As UInteger, ByRef V_Data As String)	'Empfänger für neue Daten
+Sub TSNE_NewData (ByVal V_TSNEID As UInteger, ByRef V_Data As String)	'Empfï¿½nger fï¿½r neue Daten
+	If InStr(V_Data, "errorCode") > 0 Then
+		Print "ERROR"
+	Else
+		Print "OK"
+	EndIf
+	
 	If DEBUG = 1 Then
 		Print
 		Print
@@ -150,6 +156,8 @@ End Sub
 Sub SONOS_Play(ByVal V_TSNEID As UInteger)
 	Print "CONNECTED"
 	
+	THREADS_OPEN = THREADS_OPEN + 1
+	
 	Dim CRLF As String = Chr(13, 10)
 	Dim D As String
 	Dim P As String
@@ -161,7 +169,7 @@ Sub SONOS_Play(ByVal V_TSNEID As UInteger)
 	P += "HOST: " & SONOS_IP & ":" & SONOS_PORT & CRLF
 	P += "CONTENT-LENGTH: " & Len(D) & CRLF
 	P += "CONTENT-TYPE: text/xml; charset=""utf-8""" & CRLF
-	P += "SOAPACTION: ""urn:schemas-upnp-org:service:RenderingControl:1#Play""" & CRLF
+	P += "SOAPACTION: ""urn:schemas-upnp-org:service:AVTransport:1#Play""" & CRLF
 	P += CRLF
 	P += D
 	
@@ -179,9 +187,11 @@ Sub SONOS_Play(ByVal V_TSNEID As UInteger)
 	Dim BV As Integer = TSNE_Data_Send(V_TSNEID, P)
 	If BV <> TSNE_Const_NoError Then
 		Print "[ERROR] " & TSNE_GetGURUCode(BV)
+	'ElseIf 
 	Else
 		Print "OK"
 	End If
+
 End Sub
 
 '##############################################################################################################
@@ -199,7 +209,7 @@ Sub SONOS_Pause(ByVal V_TSNEID As UInteger)
 	P += "HOST: " & SONOS_IP & ":" & SONOS_PORT & CRLF
 	P += "CONTENT-LENGTH: " & Len(D) & CRLF
 	P += "CONTENT-TYPE: text/xml; charset=""utf-8""" & CRLF
-	P += "SOAPACTION: ""urn:schemas-upnp-org:service:RenderingControl:1#Pause""" & CRLF
+	P += "SOAPACTION: ""urn:schemas-upnp-org:service:AVTransport:1#Pause""" & CRLF
 	P += CRLF
 	P += D
 	
@@ -217,8 +227,6 @@ Sub SONOS_Pause(ByVal V_TSNEID As UInteger)
 	Dim BV As Integer = TSNE_Data_Send(V_TSNEID, P)
 	If BV <> TSNE_Const_NoError Then
 		Print "[ERROR] " & TSNE_GetGURUCode(BV)
-	Else
-		Print "OK"
 	End If
 End Sub
 
@@ -263,7 +271,7 @@ End Sub
 '##############################################################################################################
 '##############################################################################################################
 '##############################################################################################################
-Dim BV As Integer									'Variable für Statusrückgabe erstellen
+Dim BV As Integer									'Variable fï¿½r Statusrï¿½ckgabe erstellen
 Dim SonosIP As String = Command(1)
 Dim SonosCmd As String = Command(2)
 
@@ -331,7 +339,7 @@ Select Case UCase(SonosCmd)
 		BV = TSNE_Create_Client(G_Client, SONOS_IP, SONOS_PORT, @TSNE_Disconnected, @SONOS_Volume, @TSNE_NewData, 60)
 End Select
 
-'	Statusrückgabe auswerten
+'	Statusrï¿½ckgabe auswerten
 'If BV <> TSNE_Const_NoError Then
 '	Print "[ERROR] " & TSNE_GetGURUCode(BV)		'Fehler ausgeben
 '	Print "[[" & BV & "]]"
