@@ -17,7 +17,7 @@
 - [x] **Inkonsistentes `THREADS_OPEN` Handling in `SONOS_Play` korrigieren (`SonosControl.bas`)**
   - In `SONOS_Play` (Zeile 172) wird `THREADS_OPEN` inkrementiert, aber nie dekrementiert.
   - Bei `SONOS_Pause` und `SONOS_Volume` fehlt dieses Handling vollständig. Überbleibsel aus altem Refactoring entfernen.
-- [ ] **Eingabe-Validierung für Lautstärke hinzufügen (`SonosControl.bas`)**
+- [x] **Eingabe-Validierung für Lautstärke hinzufügen (`SonosControl.bas`)**
   - Bei `SONOS_VOL` fehlt eine Prüfung auf Wertebereich (0–100) sowie eine Prüfung auf gültige numerische Werte.
 
 ---
@@ -43,13 +43,13 @@
 
 ## Robustheit / Validierung
 
-- [ ] **Keine Validierung des Volume-Werts** (`SonosControl.bas:315-317, 254`)
+- [x] **Keine Validierung des Volume-Werts** (`SonosControl.bas:315-317, 254`)
   `SONOS_VOL` wird ungeprüft in den SOAP-Body eingesetzt. Werte außerhalb 0–100 oder nicht-numerische Eingaben werden nicht abgefangen, sondern 1:1 an den Sonos-Lautsprecher gesendet.
 
-- [ ] **Volume ohne Wertangabe mutet stumm statt zu warnen** (`SonosControl.bas:315-316`)
+- [x] **Volume ohne Wertangabe mutet stumm statt zu warnen** (`SonosControl.bas:315-316`)
   Wird `VOLUME`/`VOL` ohne dritten Parameter aufgerufen, wird stillschweigend `SONOS_VOL = "0"` gesetzt (Lautsprecher wird stummgeschaltet). Ein vergessener Parameter sollte eher eine Fehlermeldung/Usage-Hinweis auslösen als eine stille Nebenwirkung zu haben.
 
-- [ ] **Führende Null bei einstelligen Lautstärkewerten unmotiviert** (`SonosControl.bas:317`)
+- [x] **Führende Null bei einstelligen Lautstärkewerten unmotiviert** (`SonosControl.bas:317`)
   `If Len(SONOS_VOL) = 1 Then SONOS_VOL = "0" & SONOS_VOL` — UPnP `DesiredVolume` benötigt kein zweistelliges Format; Zweck unklar, evtl. Überbleibsel. Sollte entweder dokumentiert oder entfernt werden.
 
 ---

@@ -362,9 +362,41 @@ EndIf
 
 SONOS_IP = SonosIP
 SONOS_PORT = 1400
-SONOS_VOL = Trim(Command(3))
-If SONOS_VOL = "" Then SONOS_VOL = "0"
-If Len(SONOS_VOL) = 1 Then SONOS_VOL = "0" & SONOS_VOL
+
+If UCase(SonosCmd) = "VOLUME" Or UCase(SonosCmd) = "VOL" Then
+	Dim rawVol As String = Trim(Command(3))
+	If rawVol = "" Then
+		Print "Error: Volume level (0-100) is required for command " & SonosCmd
+		Print
+		Print "usage: SonosControl <IP, NAME or RINCON_ID> VOLUME <0-100>"
+		Print
+		Print "press any key to exit..."
+		Sleep
+		End
+	EndIf
+	
+	Dim isValidNumber As Integer = 1
+	For vi As Integer = 1 To Len(rawVol)
+		Dim ch As String = Mid(rawVol, vi, 1)
+		If ch < "0" Or ch > "9" Then
+			isValidNumber = 0
+			Exit For
+		EndIf
+	Next vi
+	
+	Dim volVal As Integer = ValInt(rawVol)
+	If isValidNumber = 0 Or volVal < 0 Or volVal > 100 Then
+		Print "Error: Invalid volume level '" & rawVol & "' - must be an integer between 0 and 100"
+		Print
+		Print "usage: SonosControl <IP, NAME or RINCON_ID> VOLUME <0-100>"
+		Print
+		Print "press any key to exit..."
+		Sleep
+		End
+	EndIf
+	
+	SONOS_VOL = Trim(Str(volVal))
+EndIf
 
 'BV = TSNE_Create_Client(G_Client, "www.google.de", 80, @TSNE_Disconnected, @TSNE_Connected, @TSNE_NewData, 60)
 
