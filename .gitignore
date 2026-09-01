@@ -2,3 +2,4 @@
 *.undo
 *.bat
 *.ini
+.agents/rules
