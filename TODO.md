@@ -11,7 +11,7 @@
 - [x] **Fehlerhafte Parameter in Batch-Skripten korrigieren (`start-sonos.bat`, `stop-sonos.bat`)**
   - `start-sonos.bat` nutzt Subnetz `192.168.2.1` und RINCON-IDs (`RINCON_5CAAFD77B6A201400`, `RINCON_5CAAFD77B68C01400`), die nicht in `SonosControl.ini` existieren (`192.168.151.x`).
   - Skripte schlagen im aktuellen Zustand fehl.
-- [ ] **Fehlende Auflösung von Raumnamen (`SonosControl.bas`)**
+- [x] **Fehlende Auflösung von Raumnamen (`SonosControl.bas`)**
   - Parameter 1 prüft nur `If UCase(Left(SonosIP, 6)) = "RINCON"`. 
   - Die laut Hilfetext vorgesehene Übergabe von Raumnamen (z. B. `SonosControl Partyraum PLAY`) funktioniert bisher nicht, da die Sektion `[Names]` in der INI nicht ausgewertet wird.
 - [x] **Inkonsistentes `THREADS_OPEN` Handling in `SONOS_Play` korrigieren (`SonosControl.bas`)**
@@ -33,7 +33,7 @@
 - [x] **Race Condition auf `THREADS_OPEN`** (`SonosControl.bas:19, 156, 165, 337`)
   `THREADS_OPEN = THREADS_OPEN + 1` / `- 1` wird aus bis zu 254 parallelen Threads (`threadSonosScan`) ohne Mutex/Interlocked-Operation ausgeführt. Read-Modify-Write ist nicht atomar → Updates können sich gegenseitig überschreiben. Im ungünstigen Fall erreicht der Zähler nie 0 (Scan-Wartesschleife hängt, bis `Chr(27)` gedrückt wird) oder wird fälschlich 0, bevor alle Threads fertig sind.
 
-- [ ] **Kein Fehler-Feedback bei unbekanntem Gerätenamen** (`SonosControl.bas:291-293`)
+- [x] **Kein Fehler-Feedback bei unbekanntem Gerätenamen** (`SonosControl.bas:291-293`)
   Wird eine `RINCON_...`-ID übergeben, die nicht in der `.ini` steht, liefert `ini.getString` `""` zurück. Das Programm zeigt daraufhin nur den generischen Usage-Text, nicht aber eine klare Meldung wie "Gerät nicht gefunden". Für den Nutzer nicht von "keine Argumente übergeben" zu unterscheiden.
 
 - [ ] **SCAN ohne gültige IP führt zu sinnlosen Verbindungsversuchen** (`SonosControl.bas:325-333`)

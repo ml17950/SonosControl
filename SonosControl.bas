@@ -285,28 +285,75 @@ Sub SONOS_Volume(ByVal V_TSNEID As UInteger)
 End Sub
 
 '##############################################################################################################
-'##############################################################################################################
-'##############################################################################################################
-Dim BV As Integer									'Variable f�r Statusr�ckgabe erstellen
-Dim SonosIP As String = Command(1)
-Dim SonosCmd As String = Command(2)
+Function ResolveSonosTarget(ByVal target As String) As String
+	target = Trim(target)
+	If target = "" Then Return ""
+	
+	Dim iniPath As String = ExePath & "\SonosControl.ini"
+	
+	' 1. Check if target is a RINCON device ID
+	If UCase(Left(target, 6)) = "RINCON" Then
+		Dim ip As String = ini.getString("Devices", target, "", iniPath)
+		If ip <> "" Then Return ip
+	EndIf
+	
+	' 2. Search [Names] section for matching Room/Zone Name (case-insensitive)
+	Dim buffer As ZString * 32768
+	Dim res As Long = GetPrivateProfileSection("Names", @buffer, 32768, iniPath)
+	If res > 0 Then
+		Dim p As ZString Ptr = @buffer
+		While *p <> ""
+			Dim entry As String = *p
+			Dim eqPos As Integer = InStr(entry, "=")
+			If eqPos > 0 Then
+				Dim rinconId As String = Trim(Left(entry, eqPos - 1))
+				Dim roomName As String = Trim(Mid(entry, eqPos + 1))
+				If LCase(roomName) = LCase(target) Then
+					Dim ip As String = ini.getString("Devices", rinconId, "", iniPath)
+					If ip <> "" Then Return ip
+				EndIf
+			EndIf
+			p += Len(entry) + 1
+		Wend
+	EndIf
+	
+	' 3. Check if target is directly defined in [Devices]
+	Dim directIp As String = ini.getString("Devices", target, "", iniPath)
+	If directIp <> "" Then Return directIp
+	
+	' 4. If target contains dots (e.g. IP address or hostname), return as-is
+	If InStr(target, ".") > 0 Then
+		Return target
+	EndIf
+	
+	Return ""
+End Function
 
-If UCase(Left(SonosIP, 6)) = "RINCON" Then
-	SonosIP = ini.getString("Devices", SonosIP, "", ExePath & "\SonosControl.ini")
-EndIf
+'##############################################################################################################
+'##############################################################################################################
+'##############################################################################################################
+Dim BV As Integer									'Variable fr Statusrckgabe erstellen
+Dim rawTarget As String = Command(1)
+Dim SonosIP As String = ResolveSonosTarget(rawTarget)
+Dim SonosCmd As String = Command(2)
 
 If SonosIP = "" Or SonosCmd = "" Then
 	Print
 	Print "SonosControl (" & APP_VERSION & ") by M. Lindner"
 	Print
-	Print "usage: SonosControl <IP or NAME> <COMMAND> <VALUE>"
+	If rawTarget <> "" And SonosIP = "" Then
+		Print "Error: Device or Room '" & rawTarget & "' not found in SonosControl.ini"
+		Print
+	EndIf
+	Print "usage: SonosControl <IP, NAME or RINCON_ID> <COMMAND> [VALUE]"
 	Print
 	Print "example: SonosControl 192.168.178.1 SCAN"
-	Print "         (IP = any ip from your network | ip of router)
+	Print "         (IP = any ip from your network | ip of router)"
 	Print
-	Print "example: SonosControl RINCON_B8E93733EF4001400 PLAY
-	Print "example: SonosControl RINCON_B8E93733EF4001400 PAUSE
-	Print "example: SonosControl RINCON_B8E93733EF4001400 VOLUME 10
+	Print "example: SonosControl Arbeitszimmer PLAY"
+	Print "example: SonosControl RINCON_B8E93733EF4001400 PLAY"
+	Print "example: SonosControl RINCON_B8E93733EF4001400 PAUSE"
+	Print "example: SonosControl RINCON_B8E93733EF4001400 VOLUME 10"
 	Print
 	Print "press any key to exit..."
 	Sleep
