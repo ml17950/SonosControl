@@ -59,7 +59,11 @@ Sub TSNE_NewData (ByVal V_TSNEID As UInteger, ByRef V_Data As String)	'Empf�ng
 	If DEBUG = 1 Then
 		Print
 		Print
-		Color 12,0
+		If InStr(V_Data, "errorCode") > 0 Then
+			Color 12,0
+		Else
+			Color 10,0
+		EndIf
 		Print "[RECEIVED]"
 		Print V_Data
 		Color 7,0
@@ -185,7 +189,7 @@ Sub SONOS_Play(ByVal V_TSNEID As UInteger)
 	If DEBUG = 1 Then
 		Print
 		Print
-		Color 10,0
+		Color 6,0
 		Print P
 		Color 7,0
 		Print
@@ -225,7 +229,7 @@ Sub SONOS_Pause(ByVal V_TSNEID As UInteger)
 	If DEBUG = 1 Then
 		Print
 		Print
-		Color 10,0
+		Color 6,0
 		Print P
 		Color 7,0
 		Print
@@ -261,7 +265,7 @@ Sub SONOS_Volume(ByVal V_TSNEID As UInteger)
 	If DEBUG = 1 Then
 		Print
 		Print
-		Color 10,0
+		Color 6,0
 		Print P
 		Color 7,0
 		Print
