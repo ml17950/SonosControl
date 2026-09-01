@@ -253,7 +253,7 @@ Sub SONOS_Volume(ByVal V_TSNEID As UInteger)
 	
 	D = "<s:Envelope xmlns:s=""http://schemas.xmlsoap.org/soap/envelope/"" s:encodingStyle=""http://schemas.xmlsoap.org/soap/encoding/""><s:Body><u:SetVolume xmlns:u=""urn:schemas-upnp-org:service:RenderingControl:1""><InstanceID>0</InstanceID><Channel>Master</Channel><DesiredVolume>" & SONOS_VOL & "</DesiredVolume></u:SetVolume></s:Body></s:Envelope>"
 	
-	P += "POST /MediaRenderer/AVTransport/Control HTTP/1.1" & CRLF
+	P += "POST /MediaRenderer/RenderingControl/Control HTTP/1.1" & CRLF
 	P += "CONNECTION: close" & CRLF
 	P += "HOST: " & SONOS_IP & ":" & SONOS_PORT & CRLF
 	P += "CONTENT-LENGTH: " & Len(D) & CRLF
