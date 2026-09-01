@@ -19,6 +19,7 @@ Dim Shared SONOS_VOL As String
 Dim Shared THREADS_OPEN As Integer
 Dim Shared hMutexThreadsOpen As Any Ptr
 Dim Shared hMutexIniWrite As Any Ptr
+Dim Shared G_ExitCode As Integer = 0
 
 Const DEBUG As Byte = 1
 
@@ -46,13 +47,14 @@ Sub TSNE_Connected(ByVal V_TSNEID As UInteger)		'Empf�nger f�r das Connect S
 End Sub
 
 '##############################################################################################################
-Sub TSNE_Disconnected(ByVal V_TSNEID As UInteger)	'Empf�nger f�r das Disconnect Signal (Verbindung beendet)
+Sub TSNE_Disconnected(ByVal V_TSNEID As UInteger)	'Empfnger fr das Disconnect Signal (Verbindung beendet)
 	'Print "[DISCONNECTED] ";
 End Sub
 
 '##############################################################################################################
-Sub TSNE_NewData (ByVal V_TSNEID As UInteger, ByRef V_Data As String)	'Empf�nger f�r neue Daten
-	If InStr(V_Data, "errorCode") > 0 Then
+Sub TSNE_NewData (ByVal V_TSNEID As UInteger, ByRef V_Data As String)	'Empfnger fr neue Daten
+	If InStr(V_Data, "errorCode") > 0 Or InStr(V_Data, "<s:Fault>") > 0 Or InStr(V_Data, "UPnPError") > 0 Then
+		G_ExitCode = 1
 		Print "ERROR"
 	Else
 		Print "OK"
@@ -61,7 +63,7 @@ Sub TSNE_NewData (ByVal V_TSNEID As UInteger, ByRef V_Data As String)	'Empf�ng
 	If DEBUG = 1 Then
 		Print
 		Print
-		If InStr(V_Data, "errorCode") > 0 Then
+		If InStr(V_Data, "errorCode") > 0 Or InStr(V_Data, "<s:Fault>") > 0 Or InStr(V_Data, "UPnPError") > 0 Then
 			Color 12,0
 		Else
 			Color 10,0
@@ -357,7 +359,11 @@ If SonosIP = "" Or SonosCmd = "" Then
 	Print
 	Print "press any key to exit..."
 	Sleep
-	End
+	If rawTarget <> "" Or SonosCmd <> "" Then
+		End 1
+	Else
+		End 0
+	EndIf
 EndIf
 
 SONOS_IP = SonosIP
@@ -372,7 +378,7 @@ If UCase(SonosCmd) = "VOLUME" Or UCase(SonosCmd) = "VOL" Then
 		Print
 		Print "press any key to exit..."
 		Sleep
-		End
+		End 1
 	EndIf
 	
 	Dim isValidNumber As Integer = 1
@@ -392,13 +398,11 @@ If UCase(SonosCmd) = "VOLUME" Or UCase(SonosCmd) = "VOL" Then
 		Print
 		Print "press any key to exit..."
 		Sleep
-		End
+		End 1
 	EndIf
 	
 	SONOS_VOL = Trim(Str(volVal))
 EndIf
-
-'BV = TSNE_Create_Client(G_Client, "www.google.de", 80, @TSNE_Disconnected, @TSNE_Connected, @TSNE_NewData, 60)
 
 Select Case UCase(SonosCmd)
 	Case "SCAN"
@@ -458,25 +462,29 @@ Select Case UCase(SonosCmd)
 	Case "VOLUME", "VOL"
 		Print "Connecting to " & SONOS_IP & ":" & SONOS_PORT & " -> ";
 		BV = TSNE_Create_Client(G_Client, SONOS_IP, SONOS_PORT, @TSNE_Disconnected, @SONOS_Volume, @TSNE_NewData, 60)
+		
+	Case Else
+		Print "Error: Unknown command '" & SonosCmd & "'"
+		Print
+		Print "Supported commands: SCAN, PLAY, PAUSE, STOP, VOLUME (or VOL)"
+		Print
+		Print "press any key to exit..."
+		Sleep
+		End 1
 End Select
 
-'	Statusr�ckgabe auswerten
-'If BV <> TSNE_Const_NoError Then
-'	Print "[ERROR] " & TSNE_GetGURUCode(BV)		'Fehler ausgeben
-'	Print "[[" & BV & "]]"
-'	End -1											'Programmbeenden
-'End If
+If BV <> TSNE_Const_NoError Then
+	Print "[ERROR] " & TSNE_GetGURUCode(BV)
+	G_ExitCode = 1
+End If
 
-'Print "[CLOSING] ";
-TSNE_WaitClose(G_Client)
-If DEBUG = 1 Then Print "[CLOSED]"
+If UCase(SonosCmd) <> "SCAN" Then
+	TSNE_WaitClose(G_Client)
+	If DEBUG = 1 Then Print "[CLOSED]"
+End If
 
 Print
 Print "press any key to exit..."
 Sleep 3000
-End
-
-' Play: 1
-' MAC: 5c:aa:fd:4d:26:94
-' uuid:RINCON_5CAAFD4D269401400
+End G_ExitCode
 

@@ -24,7 +24,7 @@
 
 ## Funktionale Bugs
 
-- [ ] **Exit-Code wird nie gesetzt / Fehlerprüfung ist auskommentiert** (`SonosControl.bas:355-360`)
+- [x] **Exit-Code wird nie gesetzt / Fehlerprüfung ist auskommentiert** (`SonosControl.bas:355-360`)
   Der Block, der `BV` (Rückgabewert von `TSNE_Create_Client`) auswertet und mit `End -1` beendet, ist komplett auskommentiert. Das Programm beendet sich am Ende immer mit `End` (Exit-Code 0) — auch wenn PLAY/PAUSE/VOLUME fehlgeschlagen ist (Verbindung nicht möglich, Timeout, SOAP-Fehler). Für `start-sonos.bat`/`stop-sonos.bat`, die per Scheduled Task laufen, ist ein Fehlschlag dadurch von außen nicht erkennbar.
 
 - [x] **`SONOS_Play` erhöht `THREADS_OPEN`, ohne es je zu dekrementieren** (`SonosControl.bas:172`)
@@ -91,7 +91,7 @@
   - [ ] `NEXT` / `PREVIOUS` (Titel vor/zurück via AVTransport)
   - [ ] `MUTE` / `UNMUTE` (Stummschaltung via RenderingControl)
   - [ ] `GETVOLUME` / `GETSTATUS` / `INFO` (Abfragen des aktuellen Titels / Abspielstatus)
-- [ ] **Exit-Codes für Automatisierung bereitstellen**
+- [x] **Exit-Codes für Automatisierung bereitstellen**
   - Rückgabe von System-Exitcodes (`End 0` bei Erfolg, `End 1` bei Fehlern), damit Skripte und Windows Task Scheduler Fehler erkennen können.
 - [ ] **Headless-/Batch-Modus optimieren**
   - Optionale Unterdrückung von `Sleep 3000` / Interaktivität bei Aufruf aus Skripten.
