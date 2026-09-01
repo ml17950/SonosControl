@@ -17,6 +17,7 @@ Dim Shared SONOS_IP As String
 Dim Shared SONOS_PORT As Integer
 Dim Shared SONOS_VOL As String
 Dim Shared THREADS_OPEN As Integer
+Dim Shared hMutexThreadsOpen As Any Ptr
 
 Const DEBUG As Byte = 1
 
@@ -153,23 +154,22 @@ End Sub
 Sub threadSonosScan(ByVal id As Integer)
 	Dim connectIP As String
 	
-	THREADS_OPEN = THREADS_OPEN + 1
 	connectIP = SONOS_IP & id
 	
 	If DEBUG = 1 Then Print "scanning " & connectIP & ":" & SONOS_PORT
 	
-	Dim G_Client As UInteger
-	Dim BV As Integer = TSNE_Create_Client(G_Client, connectIP, SONOS_PORT, @TSNE_Disconnected, @SONOS_Scan, @TSNE_Scan_NewData, 1, TSNE_INT_StackSize, 0)
-	TSNE_WaitClose(G_Client)
+	Dim T_Client As UInteger
+	Dim BV As Integer = TSNE_Create_Client(T_Client, connectIP, SONOS_PORT, @TSNE_Disconnected, @SONOS_Scan, @TSNE_Scan_NewData, 1, TSNE_INT_StackSize, 0)
+	TSNE_WaitClose(T_Client)
 	
+	If hMutexThreadsOpen <> 0 Then MutexLock(hMutexThreadsOpen)
 	THREADS_OPEN = THREADS_OPEN - 1
+	If hMutexThreadsOpen <> 0 Then MutexUnlock(hMutexThreadsOpen)
 End Sub
 
 '##############################################################################################################
 Sub SONOS_Play(ByVal V_TSNEID As UInteger)
 	Print "CONNECTED"
-	
-	THREADS_OPEN = THREADS_OPEN + 1
 	
 	Dim CRLF As String = Chr(13, 10)
 	Dim D As String
@@ -327,15 +327,36 @@ Select Case UCase(SonosCmd)
 		
 		Print "Scanning - please wait..."
 		
+		If hMutexThreadsOpen = 0 Then hMutexThreadsOpen = MutexCreate()
+		THREADS_OPEN = 0
+		
 		For i = 1 To 254
-		    ThreadCreate(Cast(Any Ptr,@threadSonosScan), i) 
+		    If hMutexThreadsOpen <> 0 Then MutexLock(hMutexThreadsOpen)
+		    THREADS_OPEN = THREADS_OPEN + 1
+		    If hMutexThreadsOpen <> 0 Then MutexUnlock(hMutexThreadsOpen)
+		    
+		    Dim tHandle As Any Ptr = ThreadCreate(Cast(Any Ptr,@threadSonosScan), Cast(Any Ptr, i))
+		    If tHandle = 0 Then
+		        If hMutexThreadsOpen <> 0 Then MutexLock(hMutexThreadsOpen)
+		        THREADS_OPEN = THREADS_OPEN - 1
+		        If hMutexThreadsOpen <> 0 Then MutexUnlock(hMutexThreadsOpen)
+		    EndIf
 		    Sleep 10
 		Next i
 		
 		Do
 		    Sleep 100
-		    If THREADS_OPEN = 0 Then Exit Do
+		    Dim activeThreads As Integer = 0
+		    If hMutexThreadsOpen <> 0 Then MutexLock(hMutexThreadsOpen)
+		    activeThreads = THREADS_OPEN
+		    If hMutexThreadsOpen <> 0 Then MutexUnlock(hMutexThreadsOpen)
+		    If activeThreads = 0 Then Exit Do
 		Loop Until Inkey = Chr(27) 
+		
+		If hMutexThreadsOpen <> 0 Then
+			MutexDestroy(hMutexThreadsOpen)
+			hMutexThreadsOpen = 0
+		EndIf
 		
 		BV = TSNE_Const_NoError
 	

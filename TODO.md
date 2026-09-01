@@ -2,7 +2,7 @@
 
 ## Kritische Fehler & Bugs
 
-- [ ] **Thread-Safety & Race Conditions bei `SCAN` beheben (`SonosControl.bas`)**
+- [x] **Thread-Safety & Race Conditions bei `SCAN` beheben (`SonosControl.bas`)**
   - `THREADS_OPEN` wird in `threadSonosScan` (Zeile 156, 165) von bis zu 254 Threads gleichzeitig ohne Mutex/Lock verändert.
   - Das kann zu ungenauen Thread-Zählern und Hängenbleiben der Schleife (`Do ... Loop Until Inkey = Chr(27)`) führen.
 - [ ] **Dateizugriffs-Race-Condition in INI-Datei bei `SCAN` beheben (`SonosControl.bas`)**
@@ -14,7 +14,7 @@
 - [ ] **Fehlende Auflösung von Raumnamen (`SonosControl.bas`)**
   - Parameter 1 prüft nur `If UCase(Left(SonosIP, 6)) = "RINCON"`. 
   - Die laut Hilfetext vorgesehene Übergabe von Raumnamen (z. B. `SonosControl Partyraum PLAY`) funktioniert bisher nicht, da die Sektion `[Names]` in der INI nicht ausgewertet wird.
-- [ ] **Inkonsistentes `THREADS_OPEN` Handling in `SONOS_Play` korrigieren (`SonosControl.bas`)**
+- [x] **Inkonsistentes `THREADS_OPEN` Handling in `SONOS_Play` korrigieren (`SonosControl.bas`)**
   - In `SONOS_Play` (Zeile 172) wird `THREADS_OPEN` inkrementiert, aber nie dekrementiert.
   - Bei `SONOS_Pause` und `SONOS_Volume` fehlt dieses Handling vollständig. Überbleibsel aus altem Refactoring entfernen.
 - [ ] **Eingabe-Validierung für Lautstärke hinzufügen (`SonosControl.bas`)**
@@ -27,10 +27,10 @@
 - [ ] **Exit-Code wird nie gesetzt / Fehlerprüfung ist auskommentiert** (`SonosControl.bas:355-360`)
   Der Block, der `BV` (Rückgabewert von `TSNE_Create_Client`) auswertet und mit `End -1` beendet, ist komplett auskommentiert. Das Programm beendet sich am Ende immer mit `End` (Exit-Code 0) — auch wenn PLAY/PAUSE/VOLUME fehlgeschlagen ist (Verbindung nicht möglich, Timeout, SOAP-Fehler). Für `start-sonos.bat`/`stop-sonos.bat`, die per Scheduled Task laufen, ist ein Fehlschlag dadurch von außen nicht erkennbar.
 
-- [ ] **`SONOS_Play` erhöht `THREADS_OPEN`, ohne es je zu dekrementieren** (`SonosControl.bas:172`)
+- [x] **`SONOS_Play` erhöht `THREADS_OPEN`, ohne es je zu dekrementieren** (`SonosControl.bas:172`)
   Nur `SONOS_Play` enthält `THREADS_OPEN = THREADS_OPEN + 1`; `SONOS_Pause` und `SONOS_Volume` tun das nicht. Es gibt kein passendes Dekrement für diesen Pfad. Wirkt wie ein Copy-Paste-Rest aus `threadSonosScan` und ist funktionslos/irreführend, da `THREADS_OPEN` nur in der SCAN-Warteschleife ausgewertet wird.
 
-- [ ] **Race Condition auf `THREADS_OPEN`** (`SonosControl.bas:19, 156, 165, 337`)
+- [x] **Race Condition auf `THREADS_OPEN`** (`SonosControl.bas:19, 156, 165, 337`)
   `THREADS_OPEN = THREADS_OPEN + 1` / `- 1` wird aus bis zu 254 parallelen Threads (`threadSonosScan`) ohne Mutex/Interlocked-Operation ausgeführt. Read-Modify-Write ist nicht atomar → Updates können sich gegenseitig überschreiben. Im ungünstigen Fall erreicht der Zähler nie 0 (Scan-Wartesschleife hängt, bis `Chr(27)` gedrückt wird) oder wird fälschlich 0, bevor alle Threads fertig sind.
 
 - [ ] **Kein Fehler-Feedback bei unbekanntem Gerätenamen** (`SonosControl.bas:291-293`)
