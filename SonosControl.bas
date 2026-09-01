@@ -9,7 +9,7 @@
 #Include Once "inc/ini.bi"
 
 '##############################################################################################################
-Const APP_VERSION As String = "26.05.13"
+Const APP_VERSION As String = "26.09.01"
 
 Dim G_Client As UInteger
 
@@ -113,8 +113,8 @@ Sub TSNE_Scan_NewData(ByVal V_TSNEID As UInteger, ByRef V_Data As String)
 	'EndIf
 	
 	Dim As Integer pF, pS, pE
-	Dim As String Tmp, LocalUID, IPAddress
-	
+	Dim As String Tmp, LocalUID, IPAddress, ZoneName
+
 	pF = InStr(V_Data, "<LocalUID>")
 	If pF > 1 Then
 		pS = pF + Len("<LocalUID>")
@@ -122,7 +122,7 @@ Sub TSNE_Scan_NewData(ByVal V_TSNEID As UInteger, ByRef V_Data As String)
 		LocalUID = Mid(V_DATA, pS, pE-pS)
 		If DEBUG = 1 Then Print "LocalUID: [" & LocalUID & "]"
 	EndIf
-	
+
 	pF = InStr(V_Data, "<IPAddress>")
 	If pF > 1 Then
 		pS = pF + Len("<IPAddress>")
@@ -130,10 +130,19 @@ Sub TSNE_Scan_NewData(ByVal V_TSNEID As UInteger, ByRef V_Data As String)
 		IPAddress = Mid(V_DATA, pS, pE-pS)
 		If DEBUG = 1 Then Print "IPAddress: [" & IPAddress & "]"
 	EndIf
-	
+
+	pF = InStr(V_Data, "<ZoneName>")
+	If pF > 1 Then
+		pS = pF + Len("<ZoneName>")
+		pE = InStr(pS+1, V_Data, "</ZoneName>")
+		ZoneName = Mid(V_DATA, pS, pE-pS)
+		If DEBUG = 1 Then Print "ZoneName: [" & ZoneName & "]"
+	EndIf
+
 	If LocalUID <> "" And IPAddress <> "" Then
-		Print "found device " & LocalUID & " -> " & IPAddress
+		Print "found device " & LocalUID & " -> " & IPAddress & " (" & ZoneName & ")"
 		ini.setString "Devices", LocalUID, IPAddress, ExePath & "\SonosControl.ini"
+		ini.setString "Names", LocalUID, ZoneName, ExePath & "\SonosControl.ini"
 	EndIf
 End Sub
 
