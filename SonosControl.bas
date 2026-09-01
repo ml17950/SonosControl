@@ -18,6 +18,7 @@ Dim Shared SONOS_PORT As Integer
 Dim Shared SONOS_VOL As String
 Dim Shared THREADS_OPEN As Integer
 Dim Shared hMutexThreadsOpen As Any Ptr
+Dim Shared hMutexIniWrite As Any Ptr
 
 Const DEBUG As Byte = 1
 
@@ -145,9 +146,11 @@ Sub TSNE_Scan_NewData(ByVal V_TSNEID As UInteger, ByRef V_Data As String)
 	EndIf
 
 	If LocalUID <> "" And IPAddress <> "" Then
+		If hMutexIniWrite <> 0 Then MutexLock(hMutexIniWrite)
 		Print "found device " & LocalUID & " -> " & IPAddress & " (" & ZoneName & ")"
 		ini.setString "Devices", LocalUID, IPAddress, ExePath & "\SonosControl.ini"
 		ini.setString "Names", LocalUID, ZoneName, ExePath & "\SonosControl.ini"
+		If hMutexIniWrite <> 0 Then MutexUnlock(hMutexIniWrite)
 	EndIf
 End Sub
 
@@ -328,6 +331,7 @@ Select Case UCase(SonosCmd)
 		Print "Scanning - please wait..."
 		
 		If hMutexThreadsOpen = 0 Then hMutexThreadsOpen = MutexCreate()
+		If hMutexIniWrite = 0 Then hMutexIniWrite = MutexCreate()
 		THREADS_OPEN = 0
 		
 		For i = 1 To 254
@@ -356,6 +360,10 @@ Select Case UCase(SonosCmd)
 		If hMutexThreadsOpen <> 0 Then
 			MutexDestroy(hMutexThreadsOpen)
 			hMutexThreadsOpen = 0
+		EndIf
+		If hMutexIniWrite <> 0 Then
+			MutexDestroy(hMutexIniWrite)
+			hMutexIniWrite = 0
 		EndIf
 		
 		BV = TSNE_Const_NoError

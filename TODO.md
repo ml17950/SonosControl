@@ -5,7 +5,7 @@
 - [x] **Thread-Safety & Race Conditions bei `SCAN` beheben (`SonosControl.bas`)**
   - `THREADS_OPEN` wird in `threadSonosScan` (Zeile 156, 165) von bis zu 254 Threads gleichzeitig ohne Mutex/Lock verändert.
   - Das kann zu ungenauen Thread-Zählern und Hängenbleiben der Schleife (`Do ... Loop Until Inkey = Chr(27)`) führen.
-- [ ] **Dateizugriffs-Race-Condition in INI-Datei bei `SCAN` beheben (`SonosControl.bas`)**
+- [x] **Dateizugriffs-Race-Condition in INI-Datei bei `SCAN` beheben (`SonosControl.bas`)**
   - In `TSNE_Scan_NewData` (Zeilen 148-149) schreiben parallele Threads zeitgleich über `ini.setString` (`WritePrivateProfileString`) in `SonosControl.ini`.
   - Fehlende Thread-Synchronisation/Mutex kann zu Dateibeschädigungen oder Datenverlust führen.
 - [ ] **Fehlerhafte Parameter in Batch-Skripten korrigieren (`start-sonos.bat`, `stop-sonos.bat`)**
