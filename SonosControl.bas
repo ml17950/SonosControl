@@ -7,7 +7,7 @@
 #Include Once "inc/ini.bi"
 
 '##############################################################################################################
-Const APP_VERSION As String = "26.09.01"
+Const APP_VERSION As String = "26.09.02"
 
 Dim G_Client As UInteger
 
