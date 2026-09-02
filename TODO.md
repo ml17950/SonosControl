@@ -62,7 +62,7 @@
   - Auskommentierte Altlasten in `inc/ini.bi` (Zeilen 119–171 `getValue`) entfernen.
 - [x] **Variablen-Shadowing beheben (`SonosControl.bas`)**
   - `Dim G_Client As UInteger` ist sowohl global (Zeile 14) als auch lokal in `threadSonosScan` (Zeile 161) deklariert.
-- [ ] **Zeichenkodierung (Encoding) korrigieren**
+- [x] **Zeichenkodierung (Encoding) korrigieren**
   - Quellcode-Dateien von ANSI/CP1252 (mit beschädigten Umlauten wie `Empfnger`, `Statusrckgabe`) sauber nach UTF-8 konvertieren.
 
 - [x] **Totes Testcode-Fragment aus der TSNE-Beispielanwendung** (`SonosControl.bas:1-49`)
@@ -77,7 +77,7 @@
 - [ ] **`DEBUG`-Konstante ist hart auf `1` codiert** (`SonosControl.bas:21`)
   Ausführliche Debug-Ausgaben (kompletter SOAP-Request/-Response) sind im ausgelieferten Programm immer aktiv und lassen sich nur durch Neukompilieren abschalten. Eine Umschaltung über Kommandozeilen-Flag oder `.ini`-Eintrag wäre praktischer.
 
-- [ ] **Datei-Encoding von `SonosControl.bas` ist inkonsistent** (z. B. Zeilen 5, 24, 47, 52 — „fr“, „Empfnger`)
+- [x] **Datei-Encoding von `SonosControl.bas` ist inkonsistent** (z. B. Zeilen 5, 24, 47, 52 — „fr“, „Empfnger`)
   Die Datei ist laut `file`-Erkennung UTF-8, enthält aber offenbar einzelne nicht-UTF-8-kodierte Umlaute (vermutlich Cp1252/Latin-1-Reste aus einem älteren Editor), die beim Lesen als `` erscheinen. Sollte einheitlich auf eine Kodierung normalisiert werden (inkl. Korrektur der betroffenen Kommentare).
 
 - [x] **Auskommentierter Alt-Code** (`inc/ini.bi:119-171`, `SonosControl.bas:88-96, 108-117`)

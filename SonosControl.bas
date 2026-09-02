@@ -3,7 +3,7 @@
 '##############################################################################################################
 ' SonosControl
 '##############################################################################################################
-#Include Once "inc/TSNE_V3.bi"							'Die TCP Netzwerkbibliotek integrieren
+#Include Once "inc/TSNE_V3.bi"
 #Include Once "inc/ini.bi"
 
 '##############################################################################################################
@@ -52,7 +52,7 @@ End Sub
 
 '##############################################################################################################
 Sub SONOS_Scan(ByVal V_TSNEID As UInteger)
-	'Daten zum senden vorbereiten (HTTP Protokoll Anfrage)
+	' Prepare HTTP status request
 	Dim CRLF As String = Chr(13, 10)
 	Dim D As String
 	D += "GET /status/zp HTTP/1.1" & CRLF
@@ -60,7 +60,7 @@ Sub SONOS_Scan(ByVal V_TSNEID As UInteger)
 	D += "connection: close" & CRLF
 	D += CRLF
 	
-	'Daten an die Verbindung senden
+	' Send request over connection
 	Dim BV As Integer = TSNE_Data_Send(V_TSNEID, D)
 	If BV <> TSNE_Const_NoError Then
 		Print "[FEHLER] " & TSNE_GetGURUCode(BV)
@@ -281,7 +281,7 @@ End Function
 '##############################################################################################################
 '##############################################################################################################
 '##############################################################################################################
-Dim BV As Integer									'Variable fr Statusrckgabe erstellen
+Dim BV As Integer
 Dim rawTarget As String = Command(1)
 Dim SonosIP As String = ResolveSonosTarget(rawTarget)
 Dim SonosCmd As String = Command(2)
