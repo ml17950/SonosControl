@@ -74,8 +74,8 @@
 - [x] **Fehlende schließende Anführungszeichen bei `Print`-Anweisungen** (`SonosControl.bas:302, 304, 305, 306`)
   Mehrere `Print "..."`-Zeilen im Usage-Text sind nicht mit `"` geschlossen (FreeBASIC toleriert das am Zeilenende, ist aber inkonsistent zu den übrigen `Print`-Zeilen und fehleranfällig bei künftigen Änderungen).
 
-- [ ] **`DEBUG`-Konstante ist hart auf `1` codiert** (`SonosControl.bas:21`)
-  Ausführliche Debug-Ausgaben (kompletter SOAP-Request/-Response) sind im ausgelieferten Programm immer aktiv und lassen sich nur durch Neukompilieren abschalten. Eine Umschaltung über Kommandozeilen-Flag oder `.ini`-Eintrag wäre praktischer.
+- [x] **`DEBUG`-Konstante ist hart auf `1` codiert** (`SonosControl.bas:21`)
+  Ausführliche Debug-Ausgaben (kompletter SOAP-Request/-Response) sind im ausgelieferten Programm immer aktiv und lassen sich nur durch Neukompilieren abschalten. Eine Umschaltung über Kommandozeilen-Flag praktischer.
 
 - [x] **Datei-Encoding von `SonosControl.bas` ist inkonsistent** (z. B. Zeilen 5, 24, 47, 52 — „fr“, „Empfnger`)
   Die Datei ist laut `file`-Erkennung UTF-8, enthält aber offenbar einzelne nicht-UTF-8-kodierte Umlaute (vermutlich Cp1252/Latin-1-Reste aus einem älteren Editor), die beim Lesen als `` erscheinen. Sollte einheitlich auf eine Kodierung normalisiert werden (inkl. Korrektur der betroffenen Kommentare).

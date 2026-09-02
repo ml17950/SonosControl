@@ -18,8 +18,7 @@ Dim Shared THREADS_OPEN As Integer
 Dim Shared hMutexThreadsOpen As Any Ptr
 Dim Shared hMutexIniWrite As Any Ptr
 Dim Shared G_ExitCode As Integer = 0
-
-Const DEBUG As Byte = 1
+Dim Shared DEBUG As Byte = 0
 
 '##############################################################################################################
 Sub TSNE_Disconnected(ByVal V_TSNEID As UInteger)
@@ -286,6 +285,16 @@ Dim rawTarget As String = Command(1)
 Dim SonosIP As String = ResolveSonosTarget(rawTarget)
 Dim SonosCmd As String = Command(2)
 
+DEBUG = ini.getBoolean("Settings", "Debug", 0, ExePath & "\SonosControl.ini")
+
+For pi As Integer = 1 To 10
+	Dim arg As String = UCase(Trim(Command(pi)))
+	If arg = "/DEBUG" Or arg = "-D" Or arg = "--DEBUG" Or arg = "/D" Then
+		DEBUG = 1
+		Exit For
+	EndIf
+Next pi
+
 If SonosIP = "" Or SonosCmd = "" Then
 	Print
 	Print "SonosControl (" & APP_VERSION & ") by M. Lindner"
@@ -294,7 +303,7 @@ If SonosIP = "" Or SonosCmd = "" Then
 		Print "Error: Device or Room '" & rawTarget & "' not found in SonosControl.ini"
 		Print
 	EndIf
-	Print "usage: SonosControl <IP, NAME or RINCON_ID> <COMMAND> [VALUE]"
+	Print "usage: SonosControl <IP, NAME or RINCON_ID> <COMMAND> [VALUE] [/DEBUG]"
 	Print
 	Print "example: SonosControl 192.168.178.1 SCAN"
 	Print "         (IP = any ip from your network | ip of router)"
@@ -303,6 +312,8 @@ If SonosIP = "" Or SonosCmd = "" Then
 	Print "example: SonosControl RINCON_B8E93733EF4001400 PLAY"
 	Print "example: SonosControl RINCON_B8E93733EF4001400 PAUSE"
 	Print "example: SonosControl RINCON_B8E93733EF4001400 VOLUME 10"
+	Print
+	Print "options: /DEBUG or -d  Enable detailed debug output"
 	Print
 	Print "press any key to exit..."
 	Sleep
