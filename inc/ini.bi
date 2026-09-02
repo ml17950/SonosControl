@@ -1,11 +1,6 @@
 #print "using ini.bi                by M. Lindner | created ??.??.???? | updated 28.02.2018"
 
-'#If __FB_VERSION__ < "1.00"
-	'Declare Function fbGetPrivateProfileString Lib "kernel32" Alias "GetPrivateProfileStringA" (ByVal lpApplicationName As String, ByVal lpKeyName As String, ByVal lpDefault As String, ByVal lpReturnedString As String, ByVal nSize As Long, ByVal lpFileName As String) As Long
-	'Declare Function fbWritePrivateProfileString Lib "kernel32" Alias "WritePrivateProfileStringA" (ByVal lpApplicationName As String, ByVal lpKeyName As String, ByVal lpString As String, ByVal lpFileName As String) As Long
-'#Else
-	#Include Once "windows.bi"
-'#EndIf
+#Include Once "windows.bi"
 
 Namespace ini
 	Function getString(ByVal sSection As String, ByVal sKey As String, ByVal sDefault As String = "", ByVal sFile As String = "") As String
@@ -115,59 +110,5 @@ Namespace ini
 	   
 	   WritePrivateProfileString sSection, NULL, NULL, file
 	End Sub
-	
-	'Function getValue(ByVal sSection As String, ByVal sKey As String, ByVal sDefault As String, ByVal sFile As String) As String
-	'	Dim As Integer f, is_section, p
-	'	Dim As String ret, dat, tmp
-	'	
-	'	ret = sDefault
-	'	
-	'	f = FreeFile
-	'	If Open(sFile For Input As #f) = 0 Then
-	'		Do Until Eof(f)
-	'			Line Input #f, dat
-	'			
-	'			If dat <> "" Then
-	'				'Print "line: " & dat
-	'				Select Case Left(dat, 1)
-	'					Case ";", "#"
-	'						' comment >> irgnore
-	'					
-	'					Case "["
-	'						' section
-	'						tmp = Mid(dat, 2, Len(dat) - 2)
-	'						Print "check sec: " & tmp & "/" & sSection
-	'						If LCase(tmp) = LCase(sSection) Then
-	'							is_section = 1
-	'						Else
-	'							is_section = 0
-	'						EndIf
-	'					
-	'					Case Else
-	'						' value
-	'						If is_section = 1 Then
-	'							p = InStr(dat, "=")
-	'							'Print "value: " & dat & "/" & p
-	'							If p > 0 Then
-	'								tmp = Left(dat, p-1)
-	'								Print "check val: " & tmp & "/" & sKey
-	'								'Print "val#1: " & tmp
-	'								If LCase(tmp) = LCase(sKey) Then
-	'									tmp = Mid(dat, p+1)
-	'									Print "set retvl: " & tmp
-	'									Print
-	'									
-	'									ret = tmp
-	'								EndIf
-	'							EndIf
-	'						EndIf
-	'				End Select
-	'			EndIf
-	'		Loop
-	'		Close #f
-	'	EndIf
-	'	
-	'	Return ret
-	'End Function
 End Namespace
 

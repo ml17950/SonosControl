@@ -1,9 +1,7 @@
-
 ' http://technikblog.ch/2015/08/sonos-web-interface-erweiterte-einrichtung-fuer-sonos-lautsprecher/
 
 '##############################################################################################################
-'TEST-CLIENT f�r TSNE_V3
-'##############################################################################################################
+' SonosControl
 '##############################################################################################################
 #Include Once "inc/TSNE_V3.bi"							'Die TCP Netzwerkbibliotek integrieren
 #Include Once "inc/ini.bi"
@@ -24,35 +22,11 @@ Dim Shared G_ExitCode As Integer = 0
 Const DEBUG As Byte = 1
 
 '##############################################################################################################
-Sub TSNE_Connected(ByVal V_TSNEID As UInteger)		'Empf�nger f�r das Connect Signal (Verbindung besteht)
-	Print "[CONNECT]"
-	
-	'Daten zum senden vorbereiten (HTTP Protokoll Anfrage)
-	Dim CRLF As String = Chr(13, 10)
-	Dim D As String
-	D += "GET / HTTP/1.1" & CRLF
-	D += "Host: www.google.de" & CRLF
-	D += "connection: close" & CRLF
-	D += CRLF
-	
-	'Daten an die Verbindung senden
-	Print "[SEND] ..."
-	Print ">" & D & "<"
-	Dim BV As Integer = TSNE_Data_Send(V_TSNEID, D)
-	If BV <> TSNE_Const_NoError Then
-		Print "[FEHLER] " & TSNE_GetGURUCode(BV)		'Fehler ausgeben
-	Else
-		Print "[SEND] OK"
-	End If
+Sub TSNE_Disconnected(ByVal V_TSNEID As UInteger)
 End Sub
 
 '##############################################################################################################
-Sub TSNE_Disconnected(ByVal V_TSNEID As UInteger)	'Empfnger fr das Disconnect Signal (Verbindung beendet)
-	'Print "[DISCONNECTED] ";
-End Sub
-
-'##############################################################################################################
-Sub TSNE_NewData (ByVal V_TSNEID As UInteger, ByRef V_Data As String)	'Empfnger fr neue Daten
+Sub TSNE_NewData (ByVal V_TSNEID As UInteger, ByRef V_Data As String)
 	If InStr(V_Data, "errorCode") > 0 Or InStr(V_Data, "<s:Fault>") > 0 Or InStr(V_Data, "UPnPError") > 0 Then
 		G_ExitCode = 1
 		Print "ERROR"
@@ -73,9 +47,6 @@ Sub TSNE_NewData (ByVal V_TSNEID As UInteger, ByRef V_Data As String)	'Empfnger 
 		Color 7,0
 		Print
 		Print 
-		'Print "[RECEIVED] " & Len(V_Data) & " Bytes"
-	Else
-		'Print "[ANSWER RECEIVED] ";
 	EndIf
 End Sub
 
@@ -89,37 +60,14 @@ Sub SONOS_Scan(ByVal V_TSNEID As UInteger)
 	D += "connection: close" & CRLF
 	D += CRLF
 	
-	'If DEBUG = 1 Then
-	'	Print
-	'	Print
-	'	Color 10,0
-	'	Print D
-	'	Color 7,0
-	'	Print
-	'	Print
-	'EndIf
-	
 	'Daten an die Verbindung senden
 	Dim BV As Integer = TSNE_Data_Send(V_TSNEID, D)
 	If BV <> TSNE_Const_NoError Then
-		Print "[FEHLER] " & TSNE_GetGURUCode(BV)		'Fehler ausgeben
-	'Else
-		'Print "[SEND] OK"
+		Print "[FEHLER] " & TSNE_GetGURUCode(BV)
 	End If
 End Sub
 
 Sub TSNE_Scan_NewData(ByVal V_TSNEID As UInteger, ByRef V_Data As String)
-	'If DEBUG = 1 Then
-	'	Print
-	'	Print
-	'	Color 14,0
-	'	Print "[RECEIVED]"
-	'	Print V_Data
-	'	Color 7,0
-	'	Print
-	'	Print 
-	'EndIf
-	
 	Dim As Integer pF, pS, pE
 	Dim As String Tmp, LocalUID, IPAddress, ZoneName
 
@@ -205,7 +153,6 @@ Sub SONOS_Play(ByVal V_TSNEID As UInteger)
 	Dim BV As Integer = TSNE_Data_Send(V_TSNEID, P)
 	If BV <> TSNE_Const_NoError Then
 		Print "[ERROR] " & TSNE_GetGURUCode(BV)
-	'ElseIf 
 	Else
 		Print "OK"
 	End If

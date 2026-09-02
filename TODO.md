@@ -56,31 +56,31 @@
 
 ## Code-Qualität & Cleanup
 
-- [ ] **Totcode und Testcode entfernen (`SonosControl.bas`, `inc/ini.bi`)**
+- [x] **Totcode und Testcode entfernen (`SonosControl.bas`, `inc/ini.bi`)**
   - Unbenutzte Test-Sub `TSNE_Connected` (Google.de HTTP-Test, Zeilen 24–44) entfernen.
   - Auskommentierten Debug-/Testcode in `SonosControl.bas` bereinigen (Zeilen 88–96, 108–117, 203, 319, 355–360, 371–373).
   - Auskommentierte Altlasten in `inc/ini.bi` (Zeilen 119–171 `getValue`) entfernen.
-- [ ] **Variablen-Shadowing beheben (`SonosControl.bas`)**
+- [x] **Variablen-Shadowing beheben (`SonosControl.bas`)**
   - `Dim G_Client As UInteger` ist sowohl global (Zeile 14) als auch lokal in `threadSonosScan` (Zeile 161) deklariert.
 - [ ] **Zeichenkodierung (Encoding) korrigieren**
   - Quellcode-Dateien von ANSI/CP1252 (mit beschädigten Umlauten wie `Empfnger`, `Statusrckgabe`) sauber nach UTF-8 konvertieren.
 
-- [ ] **Totes Testcode-Fragment aus der TSNE-Beispielanwendung** (`SonosControl.bas:1-49`)
+- [x] **Totes Testcode-Fragment aus der TSNE-Beispielanwendung** (`SonosControl.bas:1-49`)
   `TSNE_Connected` (Verbindungsaufbau zu `www.google.de`) ist ein Rest aus dem ursprünglichen TSNE_V3-Testclient (siehe Kommentar Zeile 5 „TEST-CLIENT für TSNE_V3“) und wird nirgends als Callback registriert (die einzige Verwendung ist in Zeile 319 auskommentiert). Kann entfernt werden.
 
-- [ ] **Variablen-Shadowing von `G_Client`** (`SonosControl.bas:14, 161`)
+- [x] **Variablen-Shadowing von `G_Client`** (`SonosControl.bas:14, 161`)
   Globales `Dim G_Client As UInteger` (Zeile 14) wird in `threadSonosScan` durch eine lokale Variable gleichen Namens verdeckt (Zeile 161). Funktioniert, ist aber verwirrend — besserer eigener Name für die Thread-lokale Variable (z. B. `T_Client`) würde Missverständnisse vermeiden.
 
-- [ ] **Fehlende schließende Anführungszeichen bei `Print`-Anweisungen** (`SonosControl.bas:302, 304, 305, 306`)
+- [x] **Fehlende schließende Anführungszeichen bei `Print`-Anweisungen** (`SonosControl.bas:302, 304, 305, 306`)
   Mehrere `Print "..."`-Zeilen im Usage-Text sind nicht mit `"` geschlossen (FreeBASIC toleriert das am Zeilenende, ist aber inkonsistent zu den übrigen `Print`-Zeilen und fehleranfällig bei künftigen Änderungen).
 
 - [ ] **`DEBUG`-Konstante ist hart auf `1` codiert** (`SonosControl.bas:21`)
   Ausführliche Debug-Ausgaben (kompletter SOAP-Request/-Response) sind im ausgelieferten Programm immer aktiv und lassen sich nur durch Neukompilieren abschalten. Eine Umschaltung über Kommandozeilen-Flag oder `.ini`-Eintrag wäre praktischer.
 
-- [ ] **Datei-Encoding von `SonosControl.bas` ist inkonsistent** (z. B. Zeilen 5, 24, 47, 52 — „f�r“, „Empf�nger“)
-  Die Datei ist laut `file`-Erkennung UTF-8, enthält aber offenbar einzelne nicht-UTF-8-kodierte Umlaute (vermutlich Cp1252/Latin-1-Reste aus einem älteren Editor), die beim Lesen als `�` erscheinen. Sollte einheitlich auf eine Kodierung normalisiert werden (inkl. Korrektur der betroffenen Kommentare).
+- [ ] **Datei-Encoding von `SonosControl.bas` ist inkonsistent** (z. B. Zeilen 5, 24, 47, 52 — „fr“, „Empfnger`)
+  Die Datei ist laut `file`-Erkennung UTF-8, enthält aber offenbar einzelne nicht-UTF-8-kodierte Umlaute (vermutlich Cp1252/Latin-1-Reste aus einem älteren Editor), die beim Lesen als `` erscheinen. Sollte einheitlich auf eine Kodierung normalisiert werden (inkl. Korrektur der betroffenen Kommentare).
 
-- [ ] **Auskommentierter Alt-Code** (`inc/ini.bi:119-171`, `SonosControl.bas:88-96, 108-117`)
+- [x] **Auskommentierter Alt-Code** (`inc/ini.bi:119-171`, `SonosControl.bas:88-96, 108-117`)
   Größere auskommentierte Codeblöcke (alte `getValue`-Implementierung, alte Debug-Ausgaben) könnten entfernt werden, sofern nicht bewusst als Referenz behalten.
 
 ---
