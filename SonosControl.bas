@@ -406,18 +406,48 @@ EndIf
 
 Select Case UCase(SonosCmd)
 	Case "SCAN"
-		Dim i As Integer
+		Dim dotCount As Integer = 0
+		Dim isIpChars As Integer = 1
+		For di As Integer = 1 To Len(SonosIP)
+			Dim ch As String = Mid(SonosIP, di, 1)
+			If ch = "." Then
+				dotCount += 1
+			ElseIf ch < "0" Or ch > "9" Then
+				isIpChars = 0
+			EndIf
+		Next di
 		
-		i = InStrRev(SonosIP, ".")
-		SONOS_IP = Left(SonosIP, i)
+		If isIpChars = 0 Or dotCount < 2 Or dotCount > 3 Then
+			Print "Error: Invalid IP or subnet for SCAN: '" & rawTarget & "'"
+			Print "Please specify a valid network IP (e.g. 192.168.1.1)"
+			Print
+			Print "press any key to exit..."
+			Sleep
+			End 1
+		EndIf
 		
-		Print "Scanning - please wait..."
+		If dotCount = 3 Then
+			If Right(SonosIP, 1) = "." Then
+				SONOS_IP = SonosIP
+			Else
+				Dim lastDot As Integer = InStrRev(SonosIP, ".")
+				SONOS_IP = Left(SonosIP, lastDot)
+			EndIf
+		ElseIf dotCount = 2 Then
+			If Right(SonosIP, 1) = "." Then
+				SONOS_IP = SonosIP
+			Else
+				SONOS_IP = SonosIP & "."
+			EndIf
+		EndIf
+		
+		Print "Scanning subnet " & SONOS_IP & "1-254 - please wait..."
 		
 		If hMutexThreadsOpen = 0 Then hMutexThreadsOpen = MutexCreate()
 		If hMutexIniWrite = 0 Then hMutexIniWrite = MutexCreate()
 		THREADS_OPEN = 0
 		
-		For i = 1 To 254
+		For i As Integer = 1 To 254
 		    If hMutexThreadsOpen <> 0 Then MutexLock(hMutexThreadsOpen)
 		    THREADS_OPEN = THREADS_OPEN + 1
 		    If hMutexThreadsOpen <> 0 Then MutexUnlock(hMutexThreadsOpen)

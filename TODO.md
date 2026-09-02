@@ -36,7 +36,7 @@
 - [x] **Kein Fehler-Feedback bei unbekanntem Gerätenamen** (`SonosControl.bas:291-293`)
   Wird eine `RINCON_...`-ID übergeben, die nicht in der `.ini` steht, liefert `ini.getString` `""` zurück. Das Programm zeigt daraufhin nur den generischen Usage-Text, nicht aber eine klare Meldung wie "Gerät nicht gefunden". Für den Nutzer nicht von "keine Argumente übergeben" zu unterscheiden.
 
-- [ ] **SCAN ohne gültige IP führt zu sinnlosen Verbindungsversuchen** (`SonosControl.bas:325-333`)
+- [x] **SCAN ohne gültige IP führt zu sinnlosen Verbindungsversuchen** (`SonosControl.bas:325-333`)
   `i = InStrRev(SonosIP, ".")`; wird kein `.` gefunden (z. B. Tippfehler oder Gerätename statt IP ohne `.`), ist `i = 0` und `Left(SonosIP, 0) = ""`. Anschließend werden 254 Threads gestartet, die auf `"1"`, `"2"`, … `"254"` (ohne Host-Teil) zu verbinden versuchen, statt vorher zu validieren und abzubrechen.
 
 ---
